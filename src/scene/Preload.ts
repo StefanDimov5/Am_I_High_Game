@@ -3,7 +3,10 @@ export class Preload extends Phaser.Scene {
     super('preload');
   }
 
-  preload() {}
+  preload() {
+    this.load.image('map_atlas', 'assets/mainlevbuild2.png');
+    this.load.tilemapTiledJSON('map', 'assets/platformMap.json');
+  }
 
   create() {
     this.scene.start('MainPlatformer');
