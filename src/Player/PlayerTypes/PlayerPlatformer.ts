@@ -31,7 +31,7 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite {
       this.flipX = false;
     }
 
-    if ((keys.space.isDown || W.isDown) && this.body.blocked.down) {
+    if ((keys.space.isDown || W.isDown) && (this.body.blocked.down || this.body.blocked.left || this.body.blocked.right)) {
       this.setVelocityY(-500);
     }
     if (Phaser.Input.Keyboard.JustDown(C)) {
