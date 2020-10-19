@@ -1,5 +1,8 @@
 export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
   private visibleToCamera: boolean;
+  private bullet: Phaser.Physics.Arcade.Sprite;
+  private bullets: Phaser.Physics.Arcade.Sprite[] = [];
+
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'hero');
     if (this != undefined) {
@@ -15,6 +18,7 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
         delay: 2000,
         callbackScope: this,
       });
+
       this.scene.add.existing(this);
     }
   }
@@ -30,23 +34,31 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  public getBullets(): Phaser.Physics.Arcade.Sprite[] {
+    return this.bullets;
+  }
+
   public shoot() {
     if (this.isVisibleToCamera)
       if (this.active) {
-        let knife = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
+        this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
+        this.bullet.setSize(16, 8);
+        this.bullets.push(this.bullet);
         if (this.flipX) {
-          knife.setVelocityX(-500);
+          this.bullet.setVelocityX(-500);
         }
         if (!this.flipX) {
-          knife.setVelocityX(500);
+          this.bullet.setVelocityX(500);
         }
         this.scene.time.delayedCall(500, () => {
-          knife.destroy();
+          this.bullet.destroy();
         });
       }
   }
 
   public enemyDestroy() {
+    this.setVisible(false);
+    this.setActive(false);
     this.destroy(true);
   }
 
