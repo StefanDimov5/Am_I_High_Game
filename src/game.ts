@@ -1,6 +1,8 @@
 import 'phaser';
 import { Preload } from './scene/Preload';
 import { MainPlatformer } from './scene/level1/MainPlatformer';
+import { IntroSmokingScene } from './scene/cutScenes/IntroSmokingScene';
+import { WalkToShop } from './scene/cutScenes/WalkToShop';
 
 class GameApp extends Phaser.Game {
   public static gameConfig: Phaser.Types.Core.GameConfig = null;
@@ -21,7 +23,7 @@ class GameApp extends Phaser.Game {
         },
         width: 1600,
         height: 912,
-        scene: [Preload, MainPlatformer],
+        scene: [Preload, IntroSmokingScene, WalkToShop, MainPlatformer],
       };
     }
 

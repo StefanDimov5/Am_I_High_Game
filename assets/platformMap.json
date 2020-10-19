@@ -22837,7 +22837,7 @@
         {
           "height": 0,
           "id": 1,
-          "name": "PLayerSpawn",
+          "name": "PlayerSpawn",
           "point": true,
           "rotation": 0,
           "type": "",
