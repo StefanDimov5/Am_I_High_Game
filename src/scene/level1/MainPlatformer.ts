@@ -1,7 +1,8 @@
 import { World } from 'matter';
 import { Tilemaps } from 'phaser';
-import { Coin } from '../../coin/Coin';
+import { Coin } from '../../items/Coin';
 import { EnemyPlatformer } from '../../enemies/EnemyPlatformer';
+import { EnemyPlatformerContainer } from '../../enemies/EnemyPlatformerContainer';
 import { GameApp } from '../../game';
 import { PlayerStats } from '../../Player/PlayerStats';
 import { PlayerPlatformer } from '../../Player/PlayerTypes/PlayerPlatformer';
@@ -12,7 +13,9 @@ export class MainPlatformer extends Phaser.Scene {
   private healthText: Phaser.GameObjects.Text;
   private playerPlatformer: PlayerPlatformer;
   private enemyPlatformer: EnemyPlatformer;
+  private enemyContainer: EnemyPlatformerContainer;
   private enemies: EnemyPlatformer[] = [];
+  private enemiesContainers: EnemyPlatformerContainer[] = [];
   private coins: Phaser.Physics.Arcade.Sprite[] = [];
   private bg1: Phaser.GameObjects.TileSprite;
   private bg2: Phaser.GameObjects.TileSprite;
@@ -44,39 +47,33 @@ export class MainPlatformer extends Phaser.Scene {
     this.setBackground();
     this.createTileMap();
     this.playerSpawn();
-
     this.enemySpawn();
     this.coinSpawn();
-
     this.collisions();
     this.cameraSetup();
-
     this.setUI();
+    this.bulletCollisions();
+    console.log(this.enemiesContainers[1]);
   }
 
   update() {
-    this.bulletCollisions();
+    this.enemiesContainers.forEach((enemyContainer) => {
+      enemyContainer.updateBar();
+      enemyContainer.updatePosition();
+      enemyContainer.isVisible();
+    });
     if (this.playerPlatformer.body.velocity.x > 0) {
-      // this.bg1.x += 10;
-      this.cameras.main.on('move', () => {
-        console.log('test');
-      });
       this.bg2.x -= 0.01;
       this.bg3.x -= 0.1;
       this.bg4.x -= 0.3;
     }
     if (this.playerPlatformer.body.velocity.x < 0) {
-      // this.bg1.x -= 10;
       this.bg2.x += 0.01;
       this.bg3.x += 0.1;
       this.bg4.x += 0.3;
     }
     this.playerPlatformer.setVelocityX(0);
     this.playerPlatformer.controlls();
-    this.enemies.forEach((enemy) => {
-      enemy.isVisibleToCamera;
-    });
-
     this.updateUi();
   }
 
@@ -88,7 +85,7 @@ export class MainPlatformer extends Phaser.Scene {
   }
 
   public createTileMap(): void {
-    this.map = this.make.tilemap({ key: 'map' });
+    this.map = this.make.tilemap({ key: 'mapPlatformer' });
     let terrain = this.map.addTilesetImage('mainlevbuild2', 'map_atlas');
     this.platforms = this.map.createStaticLayer('mainMap', terrain, 0, 0);
 
@@ -111,9 +108,10 @@ export class MainPlatformer extends Phaser.Scene {
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyPlatformer = new EnemyPlatformer(this, enemyObj.x, enemyObj.y);
-        this.enemies.push(this.enemyPlatformer);
-        this.enemyPlatformer.setGravityY(700);
+        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y - 100);
+        this.enemies.push(this.enemyContainer.getEnemy());
+
+        this.enemiesContainers.push(this.enemyContainer);
       }
     });
   }
@@ -139,39 +137,38 @@ export class MainPlatformer extends Phaser.Scene {
     this.physics.add.collider(this.playerPlatformer, this.coins, this.playerCoinCollect, null, this);
   }
 
+  public bulletCollisions(): void {
+    if (this.playerPlatformer.getBullet()) {
+      this.physics.add.collider(this.playerPlatformer.getBullet(), this.enemies, this.playerShootCollide, null, this);
+      this.physics.add.collider(this.playerPlatformer.getBullet(), this.platforms, this.bulletHit, null, this);
+    }
+    this.enemiesContainers.forEach((enemy) => {
+      this.physics.add.collider(enemy.getEnemyBullet(), this.playerPlatformer, this.enemyShootCollide, null, this);
+      this.physics.add.collider(enemy.getEnemyBullet(), this.platforms, this.bulletHit, null, this);
+    });
+  }
+
   public playerCoinCollect(playerPlatformer: PlayerPlatformer, coin: Coin): void {
     this.playerPlatformer.getPlayerStats().scoreUp(coin.getCoinScore());
     coin.coinDestroy();
-    console.log(this.enemyPlatformer.getBullets());
   }
 
-  public playerShootCollide(bullet, enemy: EnemyPlatformer) {
+  public playerShootCollide(enemy: EnemyPlatformer, bullet) {
     bullet.destroy();
-    enemy.enemyDestroy();
+
+    enemy.takeDamage(this.playerPlatformer.getDamage());
+    console.log(enemy.getHealthStatus());
   }
 
-  public enemyShootCollide(bullet: Phaser.Physics.Arcade.Sprite, player: PlayerPlatformer) {
+  public enemyShootCollide(player: PlayerPlatformer, bullet: Phaser.Physics.Arcade.Sprite) {
     bullet.destroy();
     player.getPlayerStats().hurt();
-    console.log('Test');
   }
 
   public bulletHit(bullet: Phaser.Physics.Arcade.Sprite, platforms) {
     bullet.destroy();
   }
 
-  public bulletCollisions(): void {
-    if (this.playerPlatformer.getBullet()) {
-      this.physics.add.collider(this.playerPlatformer.getBullet(), this.enemies, this.playerShootCollide, null, this);
-      this.physics.add.collider(this.playerPlatformer.getBullet(), this.platforms, this.bulletHit, null, this);
-    }
-    this.enemies.forEach((enemy) => {
-      enemy.getBullets().forEach((bullet) => {
-        this.physics.add.collider(bullet, this.playerPlatformer, this.enemyShootCollide, null, this);
-        this.physics.add.collider(bullet, this.platforms, this.bulletHit, null, this);
-      });
-    });
-  }
   public setUI(): void {
     this.add.image(10, 40, 'heart').setScale(0.7).setOrigin(0).setScrollFactor(0);
     this.healthText = this.add.text(60, 40, `${this.playerPlatformer.getPlayerStats().getHealth()}`).setFontSize(50).setOrigin(0).setScrollFactor(0);

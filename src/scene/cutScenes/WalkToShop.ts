@@ -24,7 +24,7 @@ export class WalkToShop extends Phaser.Scene {
       frameRate: 10,
       frames: this.anims.generateFrameNames('mainHero', {
         start: 6,
-        end: 9,
+        end: 8,
       }),
       repeat: -1,
     });
@@ -53,9 +53,26 @@ export class WalkToShop extends Phaser.Scene {
       },
       onCompleteScope: this,
     });
+
+    this.time.delayedCall(
+      10000,
+      () => {
+        this.cameras.main.fadeOut(1000);
+        this.time.delayedCall(
+          1000,
+          () => {
+            this.scene.start('MainPlatformer');
+          },
+          null,
+          this
+        );
+      },
+      null,
+      this
+    );
   }
 
   update() {
-    this.trippyBg.tilePositionX += 2;
+    this.trippyBg.tilePositionX += 15;
   }
 }

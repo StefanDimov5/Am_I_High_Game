@@ -1,7 +1,7 @@
 import { IsPlayer } from '../IsPlayer';
 import { PlayerStats } from '../PlayerStats';
 
-export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements IsPlayer {
+export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPlayer {
   private playerStats: PlayerStats;
   private bullet: Phaser.Physics.Arcade.Sprite;
   private bullets: Phaser.Physics.Arcade.Group;
@@ -13,7 +13,7 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
     scene.physics.world.enable(this);
     this.setScale(1);
     this.setSize(32, 64);
-    this.setGravityY(700);
+
     this.setCollideWorldBounds(true);
     this.playerStats = new PlayerStats(this);
     this.bullets = this.scene.physics.add.group();
@@ -38,54 +38,56 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
     let W = this.scene.input.keyboard.addKey('W');
     let A = this.scene.input.keyboard.addKey('A');
     let D = this.scene.input.keyboard.addKey('D');
+    let S = this.scene.input.keyboard.addKey('S');
     let C = this.scene.input.keyboard.addKey('C');
     if (this.active) {
+      this.setVelocity(0, 0);
+      if (keys.up.isDown || A.isDown) {
+        this.setVelocityY(-400);
+        this.play('mainHeroRun', true);
+      } else if (keys.down.isDown || S.isDown) {
+        this.setVelocityY(400);
+        this.play('mainHeroRun', true);
+      }
+
       if (keys.left.isDown || A.isDown) {
         this.setVelocityX(-400);
         this.flipX = true;
-        if (this.body.blocked.down) {
-          this.play('mainHeroRun', true);
-        }
+        this.play('mainHeroRun', true);
       } else if (keys.right.isDown || D.isDown) {
         this.setVelocityX(400);
         this.flipX = false;
-        if (this.body.blocked.down) {
-          this.play('mainHeroRun', true);
-        }
+        this.play('mainHeroRun', true);
       } else {
         if (this.anims.getCurrentKey() != 'mainHeroShoot') {
           this.play('mainHeroIdle');
         }
       }
-
-      if ((keys.space.isDown || W.isDown) && (this.body.blocked.down || this.body.blocked.left || this.body.blocked.right)) {
-        this.setVelocityY(-500);
-      }
-      if (Phaser.Input.Keyboard.JustDown(C)) {
-        if (this.canShoot) {
-          this.canShoot = false;
-          this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
-          this.bullet.setSize(16, 8);
-          this.bullets.add(this.bullet);
-          this.scene.time.delayedCall(500, () => {
-            this.bullet.destroy();
-          });
-          if (this.flipX) {
-            this.bullet.setVelocityX(-500);
-          }
-          if (!this.flipX) {
-            this.bullet.setVelocityX(500);
-          }
-          this.play('mainHeroShoot', true);
-          this.scene.time.delayedCall(
-            500,
-            () => {
-              this.canShoot = true;
-            },
-            null,
-            this
-          );
+    }
+    if (Phaser.Input.Keyboard.JustDown(C)) {
+      if (this.canShoot) {
+        this.canShoot = false;
+        this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
+        this.bullet.setSize(16, 8);
+        this.bullets.add(this.bullet);
+        this.scene.time.delayedCall(500, () => {
+          this.bullet.destroy();
+        });
+        if (this.flipX) {
+          this.bullet.setVelocityX(-500);
         }
+        if (!this.flipX) {
+          this.bullet.setVelocityX(500);
+        }
+        this.play('mainHeroShoot', true);
+        this.scene.time.delayedCall(
+          500,
+          () => {
+            this.canShoot = true;
+          },
+          null,
+          this
+        );
       }
     }
   }

@@ -3,6 +3,7 @@ import { Preload } from './scene/Preload';
 import { MainPlatformer } from './scene/level1/MainPlatformer';
 import { IntroSmokingScene } from './scene/cutScenes/IntroSmokingScene';
 import { WalkToShop } from './scene/cutScenes/WalkToShop';
+import { MainTopDown } from './scene/level1/MainTopDown';
 
 class GameApp extends Phaser.Game {
   public static gameConfig: Phaser.Types.Core.GameConfig = null;
@@ -18,12 +19,12 @@ class GameApp extends Phaser.Game {
         physics: {
           default: 'arcade',
           arcade: {
-            debug: true,
+            debug: false,
           },
         },
         width: 1600,
         height: 912,
-        scene: [Preload, IntroSmokingScene, WalkToShop, MainPlatformer],
+        scene: [Preload, IntroSmokingScene, WalkToShop, MainTopDown, MainPlatformer],
       };
     }
 

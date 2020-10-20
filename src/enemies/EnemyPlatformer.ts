@@ -1,10 +1,13 @@
 export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
   private visibleToCamera: boolean;
   private bullet: Phaser.Physics.Arcade.Sprite;
-  private bullets: Phaser.Physics.Arcade.Sprite[] = [];
+  private bullets: Phaser.Physics.Arcade.Group;
+  private health: number = 10;
+  private container;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, container) {
     super(scene, x, y, 'hero');
+    this.container = container;
     if (this != undefined) {
       scene.physics.world.enable(this);
       this.setScale(1.5);
@@ -18,6 +21,7 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
         delay: 2000,
         callbackScope: this,
       });
+      this.bullets = this.scene.physics.add.group();
 
       this.scene.add.existing(this);
     }
@@ -34,16 +38,16 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  public getBullets(): Phaser.Physics.Arcade.Sprite[] {
+  public getBullets(): Phaser.Physics.Arcade.Group {
     return this.bullets;
   }
 
   public shoot() {
-    if (this.isVisibleToCamera)
+    if (this.isVisibleToCamera) {
       if (this.active) {
-        this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
+        this.bullet = this.scene.physics.add.sprite(this.container.getEnemy().x, this.container.getEnemy().y + 400, 'knife', 13);
         this.bullet.setSize(16, 8);
-        this.bullets.push(this.bullet);
+        this.bullets.add(this.bullet);
         if (this.flipX) {
           this.bullet.setVelocityX(-500);
         }
@@ -54,8 +58,18 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
           this.bullet.destroy();
         });
       }
+    }
   }
 
+  public takeDamage(damage: number): void {
+    this.health -= damage;
+    if (this.health <= 0) {
+      this.enemyDestroy();
+    }
+  }
+  public getHealthStatus(): number {
+    return this.health;
+  }
   public enemyDestroy() {
     this.setVisible(false);
     this.setActive(false);
@@ -63,10 +77,12 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
   }
 
   public isVisibleToCamera(): void {
-    if (this.x > this.scene.cameras.main.x && this.x < this.scene.cameras.main.x + 1600) {
-      this.visibleToCamera = true;
-    } else {
-      this.visibleToCamera = false;
+    if (this.active) {
+      if (this.x > this.scene.cameras.main.x && this.x < this.scene.cameras.main.x + 1600) {
+        this.visibleToCamera = true;
+      } else {
+        this.visibleToCamera = false;
+      }
     }
   }
 }
