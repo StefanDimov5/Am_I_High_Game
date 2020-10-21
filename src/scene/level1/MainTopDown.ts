@@ -12,6 +12,8 @@ import { Chest } from '../../items/Chest';
 export class MainTopDown extends Phaser.Scene {
   private playerStats: PlayerStats;
   private coinScoreText: Phaser.GameObjects.Text;
+  private chestQuantity: number = 0;
+  private chestQuantityText: Phaser.GameObjects.Text;
   private healthText: Phaser.GameObjects.Text;
   private playerTopDown: PlayerTopDown;
   private enemyPlatformer: EnemyPlatformer;
@@ -58,7 +60,7 @@ export class MainTopDown extends Phaser.Scene {
 
     // set a dark blue tint
     this.rt.setTint(0x0a2948);
-    this.playerTopDown = new PlayerTopDown(this, 200, 400);
+    this.playerSpawn();
     this.vision = this.make.image({
       x: this.playerTopDown.x,
       y: this.playerTopDown.y,
@@ -130,12 +132,22 @@ export class MainTopDown extends Phaser.Scene {
   public playerChestCollect(playerPlatformer: PlayerTopDown, chest: Chest): void {
     this.playerTopDown.getPlayerStats().scoreUp(chest.getCoinScore());
     chest.open();
+    this.chestQuantity--;
     chest.setFrame(0);
+  }
+
+  public playerSpawn(): void {
+    this.objLayer.objects.forEach((playerSpawn) => {
+      if (playerSpawn.name == 'PlayerSpawn') {
+        this.playerTopDown = new PlayerTopDown(this, playerSpawn.x, playerSpawn.y);
+      }
+    });
   }
 
   public chestSpawn(): void {
     let chestObj = this.objLayer.objects.forEach((chestObj) => {
       if (chestObj.name == 'Chest') {
+        this.chestQuantity += 1;
         let chest = new Chest(this, chestObj.x, chestObj.y).setFrame(1).setOrigin(0, 1);
         chest.setScale(1, 1);
         this.chests.push(chest);
@@ -187,10 +199,14 @@ export class MainTopDown extends Phaser.Scene {
 
     this.add.image(10, 110, 'coin').setOrigin(0).setScrollFactor(0);
     this.coinScoreText = this.add.text(60, 110, `${this.playerTopDown.getPlayerStats().getScore()}`).setFontSize(50).setOrigin(0).setScrollFactor(0);
+
+    this.add.image(10, 170, 'chest', 1).setOrigin(0).setScrollFactor(0).setScale(1.2);
+    this.chestQuantityText = this.add.text(65, 170, `${this.chestQuantity} Left`);
   }
 
   public updateUi(): void {
     this.healthText.text = this.playerTopDown.getPlayerStats().getHealth().toString();
     this.coinScoreText.text = this.playerTopDown.getPlayerStats().getScore().toString();
+    this.chestQuantityText.text = `${this.chestQuantity} Left`;
   }
 }

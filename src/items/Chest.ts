@@ -18,6 +18,11 @@ export class Chest extends Phaser.Physics.Arcade.Sprite {
   public open() {
     this.openStatus = true;
   }
+
+  public isOpen(): boolean {
+    return this.openStatus;
+  }
+
   public coinDestroy() {
     this.setVisible(false);
     this.setActive(false);
