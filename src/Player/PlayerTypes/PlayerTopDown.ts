@@ -7,6 +7,7 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
   private bullets: Phaser.Physics.Arcade.Group;
   private damage: number = 5;
   private canShoot: boolean = true;
+  private cursor:Phaser.Physics.Arcade.Sprite
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'mainHero');
@@ -42,7 +43,7 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
     let C = this.scene.input.keyboard.addKey('C');
     if (this.active) {
       this.setVelocity(0, 0);
-      if (keys.up.isDown || A.isDown) {
+      if (keys.up.isDown || W.isDown) {
         this.setVelocityY(-400);
         this.play('mainHeroRun', true);
       } else if (keys.down.isDown || S.isDown) {
@@ -64,33 +65,31 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
         }
       }
     }
-    if (Phaser.Input.Keyboard.JustDown(C)) {
+    this.scene.input.on("pointerdown",(pointer)=>{
       if (this.canShoot) {
         this.canShoot = false;
-        this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
+          this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
         this.bullet.setSize(16, 8);
         this.bullets.add(this.bullet);
-        this.scene.time.delayedCall(500, () => {
-          this.bullet.destroy();
-        });
-        if (this.flipX) {
-          this.bullet.setVelocityX(-500);
+        this.scene.physics.moveTo(this.bullet,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).y , 1000);
+        // this.scene.time.delayedCall(500, () => {
+          //   this.bullet.destroy();
+          // });
+          
+          this.play('mainHeroShoot', true);
+          this.scene.time.delayedCall(
+            500,
+            () => {
+              this.canShoot = true;
+            },
+            null,
+            this
+            );
+          }
         }
-        if (!this.flipX) {
-          this.bullet.setVelocityX(500);
-        }
-        this.play('mainHeroShoot', true);
-        this.scene.time.delayedCall(
-          500,
-          () => {
-            this.canShoot = true;
-          },
-          null,
-          this
-        );
-      }
-    }
+      )
   }
+
 
   public playerAnimsInit() {
     this.scene.anims.create({

@@ -4,10 +4,14 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
   private bullets: Phaser.Physics.Arcade.Group;
   private health: number = 10;
   private container;
+  private rt
+  private canShoot: boolean = false
+  private player
 
-  constructor(scene: Phaser.Scene, x: number, y: number, container) {
+  constructor(scene: Phaser.Scene, x: number, y: number, container,player) {
     super(scene, x, y, 'hero');
     this.container = container;
+    this.player = player
     if (this != undefined) {
       scene.physics.world.enable(this);
       this.setScale(1.5);
@@ -43,20 +47,17 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
   }
 
   public shoot() {
-    if (this.isVisibleToCamera) {
-      if (this.active) {
-        this.bullet = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y, 'knife', 13);
-        this.bullet.setSize(16, 8);
-        this.bullets.add(this.bullet);
-        if (this.flipX) {
-          this.bullet.setVelocityX(-500);
+    if(this.canShoot){
+      
+      if (this.isVisibleToCamera) {
+        if (this.active) {
+          this.bullet = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y, 'knife', 13);
+          
+          this.bullet.setSize(16, 8);
+          this.bullets.add(this.bullet);
+          this.scene.physics.moveToObject(this.bullet,this.player, 250)
+
         }
-        if (!this.flipX) {
-          this.bullet.setVelocityX(500);
-        }
-        this.scene.time.delayedCall(500, () => {
-          this.bullet.destroy();
-        });
       }
     }
   }
@@ -65,6 +66,14 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
     this.health -= damage;
     if (this.health <= 0) {
       this.enemyDestroy();
+    }
+  }
+
+  public canShootPlayer() {
+    if((this.x + this.container.x) - this.player.x <250 &&(this.x + this.container.x) - this.player.x >-250&&(this.y + this.container.y) - this.player.y <250 &&(this.y + this.container.y) - this.player.y >-250){
+        this.canShoot = true 
+    }else {
+      this.canShoot = false
     }
   }
   public getHealthStatus(): number {

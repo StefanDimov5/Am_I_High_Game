@@ -43,50 +43,45 @@ export class MainTopDown extends Phaser.Scene {
   create() {
     this.createTileMap();
     this.chestSpawn();
+    this.playerSpawn();
     this.enemySpawn();
+    
     this.rt = this.make.renderTexture(
       {
         width: 3200,
         height: 912,
       },
       true
-    );
-
-    // fill it with black
-    this.rt.fill(0x000000, 1);
-
-    // draw the floorLayer into it
-    this.rt.draw(this.ground, this.chests, this.enemies);
-
-    // set a dark blue tint
-    this.rt.setTint(0x0a2948);
-    this.playerSpawn();
-    this.vision = this.make.image({
-      x: this.playerTopDown.x,
-      y: this.playerTopDown.y,
-      key: 'vision',
-      add: false,
-    });
-    this.vision.scale = 15;
-
-    this.rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
-    this.rt.mask.invertAlpha = true;
-    this.setUI();
+      );
+      
+      this.rt.fill(0x000000, 1);
+      
+      
+      // // set a dark blue tint
+      this.rt.draw(this.ground, this.chests, this.enemies);
+      this.rt.setTint(0x000000);
+      this.vision = this.make.image({
+        x: this.playerTopDown.x,
+        y: this.playerTopDown.y,
+        key: 'light',
+        add: false,
+      });
+      this.vision.scale = 1;
+      
+      this.rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
+      this.rt.mask.invertAlpha = true;
+      this.setUI();
     this.collisions();
     this.cameraSetup();
-    this.lights.enable().setAmbientColor(0x333333);
-
-    //  Add an image and set it to use Lights2D
-    //  Our spotlight. 100px radius and white in color.
-    var light = this.lights.addLight(180, 80, 200).setColor(0xffffff).setIntensity(2);
     this.bulletCollisions();
   }
 
   update() {
+
     this.enemiesContainers.forEach((enemyContainer) => {
       enemyContainer.updateBar();
       enemyContainer.updatePosition();
-      enemyContainer.isVisible();
+      enemyContainer.getEnemy().canShootPlayer()
     });
     if (this.vision) {
       this.vision.x = this.playerTopDown.x;
@@ -94,8 +89,6 @@ export class MainTopDown extends Phaser.Scene {
     }
     this.playerTopDown.controlls();
     this.updateUi();
-    // this.minimap.scrollX = this.playerTopDown.x - 250;
-    // this.minimap.scrollY = this.playerTopDown.y - 150;
   }
 
   public createTileMap(): void {
@@ -117,22 +110,25 @@ export class MainTopDown extends Phaser.Scene {
 
   public cameraSetup(): void {
     this.cameras.main.startFollow(this.playerTopDown);
-    // this.cameras.main.zoom = 2;
     this.cameras.main.setBounds(0, 0, this.walls.width, this.walls.height);
-    // this.minimap = this.cameras.add(120, 750, 250, 150).setZoom(0.2).setName('mini').setOrigin(0, 0);
   }
 
   public collisions(): void {
     this.physics.add.collider(this.playerTopDown, this.walls);
     this.physics.add.collider(this.chests, this.walls);
-    // this.physics.add.collider(this.enemies, this.platforms);
+    this.physics.add.collider(this.enemies, this.walls);
     this.physics.add.overlap(this.playerTopDown, this.chests, this.playerChestCollect, null, this);
   }
 
   public playerChestCollect(playerPlatformer: PlayerTopDown, chest: Chest): void {
     this.playerTopDown.getPlayerStats().scoreUp(chest.getCoinScore());
+    
+    if(!chest.isOpen()){
+      this.chestQuantity--;
+    }
     chest.open();
-    this.chestQuantity--;
+    console.log(chest.isOpen());
+    
     chest.setFrame(0);
   }
 
@@ -140,6 +136,7 @@ export class MainTopDown extends Phaser.Scene {
     this.objLayer.objects.forEach((playerSpawn) => {
       if (playerSpawn.name == 'PlayerSpawn') {
         this.playerTopDown = new PlayerTopDown(this, playerSpawn.x, playerSpawn.y);
+        this.lights.addLight(this.playerTopDown.x,this.playerTopDown.y,150)
       }
     });
   }
@@ -158,7 +155,7 @@ export class MainTopDown extends Phaser.Scene {
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y);
+        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y,this.playerTopDown);
         this.enemies.push(this.enemyContainer.getEnemy().setGravityY(0));
 
         this.enemiesContainers.push(this.enemyContainer);
@@ -168,11 +165,11 @@ export class MainTopDown extends Phaser.Scene {
 
   public bulletCollisions(): void {
     if (this.playerTopDown.getBullet()) {
-      this.physics.add.collider(this.playerTopDown.getBullet(), this.enemies, this.playerShootCollide, null, this);
+      this.physics.add.overlap(this.playerTopDown.getBullet(), this.enemies, this.playerShootCollide, null, this);
       this.physics.add.collider(this.playerTopDown.getBullet(), this.walls, this.bulletHit, null, this);
     }
     this.enemiesContainers.forEach((enemy) => {
-      this.physics.add.collider(enemy.getEnemyBullet(), this.playerTopDown, this.enemyShootCollide, null, this);
+      this.physics.add.overlap(enemy.getEnemyBullet(), this.playerTopDown, this.enemyShootCollide, null, this);
       this.physics.add.collider(enemy.getEnemyBullet(), this.walls, this.bulletHit, null, this);
     });
   }
@@ -201,7 +198,7 @@ export class MainTopDown extends Phaser.Scene {
     this.coinScoreText = this.add.text(60, 110, `${this.playerTopDown.getPlayerStats().getScore()}`).setFontSize(50).setOrigin(0).setScrollFactor(0);
 
     this.add.image(10, 170, 'chest', 1).setOrigin(0).setScrollFactor(0).setScale(1.2);
-    this.chestQuantityText = this.add.text(65, 170, `${this.chestQuantity} Left`);
+    this.chestQuantityText = this.add.text(65, 170, `${this.chestQuantity} Left`).setFontSize(50).setOrigin(0).setScrollFactor(0);
   }
 
   public updateUi(): void {

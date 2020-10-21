@@ -22,7 +22,7 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
     this.scene.add.existing(this);
   }
 
-  public getBullet() {
+  public getBullets() {
     return this.bullets;
   }
 
@@ -61,32 +61,29 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
       if ((keys.space.isDown || W.isDown) && (this.body.blocked.down || this.body.blocked.left || this.body.blocked.right)) {
         this.setVelocityY(-500);
       }
-      if (Phaser.Input.Keyboard.JustDown(C)) {
+      this.scene.input.on("pointerdown",(pointer)=>{
         if (this.canShoot) {
           this.canShoot = false;
-          this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
+            this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
           this.bullet.setSize(16, 8);
           this.bullets.add(this.bullet);
-          this.scene.time.delayedCall(500, () => {
-            this.bullet.destroy();
-          });
-          if (this.flipX) {
-            this.bullet.setVelocityX(-500);
+          this.scene.physics.moveTo(this.bullet,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).y , 1000);
+          // this.scene.time.delayedCall(500, () => {
+            //   this.bullet.destroy();
+            // });
+            
+            this.play('mainHeroShoot', true);
+            this.scene.time.delayedCall(
+              500,
+              () => {
+                this.canShoot = true;
+              },
+              null,
+              this
+              );
+            }
           }
-          if (!this.flipX) {
-            this.bullet.setVelocityX(500);
-          }
-          this.play('mainHeroShoot', true);
-          this.scene.time.delayedCall(
-            500,
-            () => {
-              this.canShoot = true;
-            },
-            null,
-            this
-          );
-        }
-      }
+        )
     }
   }
 

@@ -60,7 +60,7 @@ export class MainPlatformer extends Phaser.Scene {
     this.enemiesContainers.forEach((enemyContainer) => {
       enemyContainer.updateBar();
       enemyContainer.updatePosition();
-      enemyContainer.isVisible();
+      enemyContainer.getEnemy().canShootPlayer()
     });
     if (this.playerPlatformer.body.velocity.x > 0) {
       this.bg2.x -= 0.01;
@@ -108,7 +108,7 @@ export class MainPlatformer extends Phaser.Scene {
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y - 100);
+        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y - 100,this.playerPlatformer);
         this.enemies.push(this.enemyContainer.getEnemy());
 
         this.enemiesContainers.push(this.enemyContainer);
@@ -138,9 +138,9 @@ export class MainPlatformer extends Phaser.Scene {
   }
 
   public bulletCollisions(): void {
-    if (this.playerPlatformer.getBullet()) {
-      this.physics.add.collider(this.playerPlatformer.getBullet(), this.enemies, this.playerShootCollide, null, this);
-      this.physics.add.collider(this.playerPlatformer.getBullet(), this.platforms, this.bulletHit, null, this);
+    if (this.playerPlatformer.getBullets()) {
+      this.physics.add.collider(this.playerPlatformer.getBullets(), this.enemies, this.playerShootCollide, null, this);
+      this.physics.add.collider(this.playerPlatformer.getBullets(), this.platforms, this.bulletHit, null, this);
     }
     this.enemiesContainers.forEach((enemy) => {
       this.physics.add.collider(enemy.getEnemyBullet(), this.playerPlatformer, this.enemyShootCollide, null, this);
@@ -154,10 +154,9 @@ export class MainPlatformer extends Phaser.Scene {
   }
 
   public playerShootCollide(enemy: EnemyPlatformer, bullet) {
-    bullet.destroy();
-
+    
     enemy.takeDamage(this.playerPlatformer.getDamage());
-    console.log(enemy.getHealthStatus());
+    bullet.destroy();
   }
 
   public enemyShootCollide(player: PlayerPlatformer, bullet: Phaser.Physics.Arcade.Sprite) {
