@@ -45,7 +45,7 @@ export class EnemyPlatformer extends Phaser.Physics.Arcade.Sprite {
   public shoot() {
     if (this.isVisibleToCamera) {
       if (this.active) {
-        this.bullet = this.scene.physics.add.sprite(this.container.getEnemy().x, this.container.getEnemy().y + 400, 'knife', 13);
+        this.bullet = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y, 'knife', 13);
         this.bullet.setSize(16, 8);
         this.bullets.add(this.bullet);
         if (this.flipX) {

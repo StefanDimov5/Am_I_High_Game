@@ -65,7 +65,7 @@ export class MainTopDown extends Phaser.Scene {
       key: 'vision',
       add: false,
     });
-    this.vision.scale = 6;
+    this.vision.scale = 15;
 
     this.rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
     this.rt.mask.invertAlpha = true;
@@ -146,7 +146,7 @@ export class MainTopDown extends Phaser.Scene {
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y - 100);
+        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y);
         this.enemies.push(this.enemyContainer.getEnemy().setGravityY(0));
 
         this.enemiesContainers.push(this.enemyContainer);
