@@ -53,11 +53,9 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
 
       if (keys.left.isDown || A.isDown) {
         this.setVelocityX(-400);
-        this.flipX = true;
         this.play('mainHeroRun', true);
       } else if (keys.right.isDown || D.isDown) {
         this.setVelocityX(400);
-        this.flipX = false;
         this.play('mainHeroRun', true);
       } else {
         if (this.anims.getCurrentKey() != 'mainHeroShoot') {
@@ -88,6 +86,14 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
           }
         }
       )
+      this.scene.input.on("pointermove",(pointer)=>{
+        if(this.x > this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x){
+          this.flipX = true
+        }else{
+          this.flipX = false
+        }
+      }
+        )
   }
 
 

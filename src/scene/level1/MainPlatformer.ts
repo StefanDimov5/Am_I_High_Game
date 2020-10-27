@@ -1,21 +1,21 @@
 import { World } from 'matter';
 import { Tilemaps } from 'phaser';
 import { Coin } from '../../items/Coin';
-import { EnemyPlatformer } from '../../enemies/EnemyPlatformer';
-import { EnemyPlatformerContainer } from '../../enemies/EnemyPlatformerContainer';
 import { GameApp } from '../../game';
 import { PlayerStats } from '../../Player/PlayerStats';
 import { PlayerPlatformer } from '../../Player/PlayerTypes/PlayerPlatformer';
+import { Enemy } from '../../enemies/Enemy';
+import { EnemyContainer } from '../../enemies/EnemyContainer';
 
 export class MainPlatformer extends Phaser.Scene {
   private playerStats: PlayerStats;
   private coinScoreText: Phaser.GameObjects.Text;
   private healthText: Phaser.GameObjects.Text;
   private playerPlatformer: PlayerPlatformer;
-  private enemyPlatformer: EnemyPlatformer;
-  private enemyContainer: EnemyPlatformerContainer;
-  private enemies: EnemyPlatformer[] = [];
-  private enemiesContainers: EnemyPlatformerContainer[] = [];
+  private enemyPlatformer: Enemy;
+  private enemyContainer: EnemyContainer;
+  private enemies: Enemy[] = [];
+  private enemiesContainers: EnemyContainer[] = [];
   private coins: Phaser.Physics.Arcade.Sprite[] = [];
   private bg1: Phaser.GameObjects.TileSprite;
   private bg2: Phaser.GameObjects.TileSprite;
@@ -26,6 +26,8 @@ export class MainPlatformer extends Phaser.Scene {
   private platforms: Tilemaps.StaticTilemapLayer;
   private objLayer: Tilemaps.ObjectLayer;
   private playerSpawnObj: Phaser.GameObjects.Sprite;
+  private timer:Phaser.Time.TimerEvent
+  private timerText:Phaser.GameObjects.Text
 
   constructor() {
     super('MainPlatformer');
@@ -53,9 +55,22 @@ export class MainPlatformer extends Phaser.Scene {
     this.cameraSetup();
     this.setUI();
     this.bulletCollisions();
-    console.log(this.enemiesContainers[1]);
+    this.timer = this.time.addEvent({
+      delay:100000,
+      callback :this.startScene,
+callbackScope: this
+    })
+
+    // (100000,()=>{
+    //   this.scene.stop()
+    //   this.scene.start("MainTopDown")
+    // }).getOverallProgress()
   }
 
+  startScene() {
+    this.scene.stop()
+      this.scene.start("MainTopDown")
+  }
   update() {
     this.enemiesContainers.forEach((enemyContainer) => {
       enemyContainer.updateBar();
@@ -108,7 +123,7 @@ export class MainPlatformer extends Phaser.Scene {
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y - 100,this.playerPlatformer);
+        this.enemyContainer = new EnemyContainer(this, enemyObj.x, enemyObj.y - 100,this.playerPlatformer,500);
         this.enemies.push(this.enemyContainer.getEnemy());
 
         this.enemiesContainers.push(this.enemyContainer);
@@ -153,7 +168,7 @@ export class MainPlatformer extends Phaser.Scene {
     coin.coinDestroy();
   }
 
-  public playerShootCollide(enemy: EnemyPlatformer, bullet) {
+  public playerShootCollide(enemy: Enemy, bullet) {
     
     enemy.takeDamage(this.playerPlatformer.getDamage());
     bullet.destroy();
@@ -174,10 +189,17 @@ export class MainPlatformer extends Phaser.Scene {
 
     this.add.image(10, 110, 'coin').setOrigin(0).setScrollFactor(0);
     this.coinScoreText = this.add.text(60, 110, `${this.playerPlatformer.getPlayerStats().getScore()}`).setFontSize(50).setOrigin(0).setScrollFactor(0);
+
+    this.timerText = this.add.text(800, 40, `${this.timer}`).setFontSize(50).setOrigin(0.5).setScrollFactor(0);
   }
 
   public updateUi(): void {
     this.healthText.text = this.playerPlatformer.getPlayerStats().getHealth().toString();
     this.coinScoreText.text = this.playerPlatformer.getPlayerStats().getScore().toString();
+    if(this.playerPlatformer.getPlayerStats().getScore() == this.coins.length *100) {
+      this.scene.stop()
+      this.scene.start("MainTopDown")
+    }
+    this.timerText.text = `${Math.floor(100 - this.timer.getElapsedSeconds())}`
   }
 }

@@ -7,11 +7,14 @@ export class Preload extends Phaser.Scene {
     this.load.image('map_atlas', 'assets/maps/platformer/mainlevbuild2.png');
     this.load.tilemapTiledJSON('mapPlatformer', 'assets/maps/platformer/platformMap.json');
     this.load.tilemapTiledJSON('mapTopDown', 'assets/maps/TopDown/TopDownMap.json');
+    this.load.tilemapTiledJSON('BossTopDownMap', 'assets/maps/TopDown/BossTopDownMap.json');
+    this.load.tilemapTiledJSON('mainShooterMap', 'assets/maps/mainShooter/Shooter.json');
+    this.load.image('mapAtlasShooter', "assets/maps/mainShooter/Devil'sCoinTileset.png");
     this.load.image('mapAtlasTopDown', 'assets/maps/TopDown/mainlevbuild.png');
     this.load.spritesheet('chest', 'assets/maps/TopDown/chests_32x32.png', { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('bossIdle', 'assets/boss/Robot Idle.png', { frameWidth: 1000, frameHeight: 1000 });
     this.load.spritesheet('bossShoot', 'assets/boss/robot shooting.png', { frameWidth: 1000, frameHeight: 1000 });
-  
+    this.load.image("cursor",'assets/cursor.png')
     this.load.spritesheet('chest', 'assets/maps/TopDown/chests_32x32.png', { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('chest', 'assets/maps/TopDown/chests_32x32.png', { frameWidth: 32, frameHeight: 32 });
     this.load.image('bg1', 'assets/bg1.png');
@@ -31,6 +34,6 @@ export class Preload extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('MainTopDown');
+    this.scene.start('MainPlatformer');
   }
 }

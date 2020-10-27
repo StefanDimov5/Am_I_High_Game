@@ -1,11 +1,13 @@
 export class HealthBar extends Phaser.Physics.Arcade.Sprite {
   private coinScore: number = 100;
+  private size: number
   private health: number;
   private healthValue: number;
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number,size: number) {
     super(scene, x, y, 'healthBar');
     scene.physics.world.enable(this);
     this.setScale(1, 1);
+    this.size = size
     // this.barMove();
     this.scene.add.existing(this);
   }
@@ -21,12 +23,13 @@ export class HealthBar extends Phaser.Physics.Arcade.Sprite {
   }
 
   public setBar(health: number) {
-    this.healthValue = health / 10;
+    this.healthValue = health;
+    this.setScale(this.size,1)
   }
 
   public updateBar(health: number): void {
-    let scaleX = this.healthValue * health;
+    let scaleX =  health*this.size;
 
-    this.setScale(scaleX / 10, 1);
+    this.setScale(scaleX /this.healthValue, 1);
   }
 }

@@ -5,6 +5,7 @@ import { IntroSmokingScene } from './scene/cutScenes/IntroSmokingScene';
 import { WalkToShop } from './scene/cutScenes/WalkToShop';
 import { MainTopDown } from './scene/level1/MainTopDown';
 import { BossTopDownScene } from './scene/boss/BossTopDownScene';
+import { MainShooter } from './scene/level1/MainShooter';
 
 class GameApp extends Phaser.Game {
   public static gameConfig: Phaser.Types.Core.GameConfig = null;
@@ -25,7 +26,7 @@ class GameApp extends Phaser.Game {
         },
         width: 1600,
         height: 912,
-        scene: [Preload, IntroSmokingScene, WalkToShop, MainTopDown, MainPlatformer,BossTopDownScene],
+        scene: [Preload, IntroSmokingScene, WalkToShop, MainTopDown, MainPlatformer,BossTopDownScene,MainShooter],
       };
     }
 

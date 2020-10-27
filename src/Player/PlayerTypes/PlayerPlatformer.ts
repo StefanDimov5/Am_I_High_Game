@@ -42,13 +42,11 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
     if (this.active) {
       if (keys.left.isDown || A.isDown) {
         this.setVelocityX(-400);
-        this.flipX = true;
         if (this.body.blocked.down) {
           this.play('mainHeroRun', true);
         }
       } else if (keys.right.isDown || D.isDown) {
         this.setVelocityX(400);
-        this.flipX = false;
         if (this.body.blocked.down) {
           this.play('mainHeroRun', true);
         }
@@ -84,6 +82,14 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
             }
           }
         )
+        this.scene.input.on("pointermove",(pointer)=>{
+          if(this.x > this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x){
+            this.flipX = true
+          }else{
+            this.flipX = false
+          }
+        }
+          )
     }
   }
 

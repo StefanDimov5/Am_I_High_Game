@@ -3,7 +3,8 @@
     {
      "export":
         {
-         "format":"json"
+         "format":"json",
+         "target":"C:\/Users\/Asus\/Desktop\/Am_I_High\/assets\/maps\/TopDown"
         }
     },
  "height":57,
@@ -71,8 +72,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":525,
-                 "y":668
+                 "x":592,
+                 "y":624
                 }, 
                 {
                  "height":0,
@@ -541,6 +542,66 @@
                  "width":0,
                  "x":160,
                  "y":272
+                }, 
+                {
+                 "gid":2568,
+                 "height":32,
+                 "id":58,
+                 "name":"ChestLife",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":48,
+                 "y":672
+                }, 
+                {
+                 "gid":2568,
+                 "height":32,
+                 "id":59,
+                 "name":"ChestLife",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":2656,
+                 "y":864
+                }, 
+                {
+                 "gid":2568,
+                 "height":32,
+                 "id":60,
+                 "name":"ChestLife",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1840,
+                 "y":64
+                }, 
+                {
+                 "gid":2568,
+                 "height":32,
+                 "id":61,
+                 "name":"ChestLife",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1728,
+                 "y":544
+                }, 
+                {
+                 "gid":2568,
+                 "height":32,
+                 "id":62,
+                 "name":"ChestLife",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1840,
+                 "y":864
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -561,7 +622,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":58,
+ "nextobjectid":63,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.2",
@@ -570,7 +631,7 @@
         {
          "columns":64,
          "firstgid":1,
-         "image":"..\/..\/..\/..\/TopDown\/mainlevbuild.png",
+         "image":"C:\/Users\/Asus\/Desktop\/TopDown\/mainlevbuild.png",
          "imageheight":640,
          "imagewidth":1024,
          "margin":0,
@@ -583,7 +644,7 @@
         {
          "columns":3,
          "firstgid":2561,
-         "image":"..\/..\/..\/..\/TopDown\/chests_32x32.png",
+         "image":"C:\/Users\/Asus\/Desktop\/TopDown\/chests_32x32.png",
          "imageheight":160,
          "imagewidth":96,
          "margin":0,

@@ -1,19 +1,23 @@
-import { EnemyPlatformer } from './EnemyPlatformer';
+
+import { IsPlayer } from '../Player/IsPlayer';
+import { Enemy } from './Enemy';
 import { HealthBar } from './HealthBar';
 
-export class EnemyPlatformerContainer extends Phaser.GameObjects.Container {
-  private enemy: EnemyPlatformer;
+export class EnemyContainer extends Phaser.GameObjects.Container {
+  private enemy: Enemy;
   private healthBar: HealthBar;
   private healthBarBack: HealthBar;
   private bullet: Phaser.Physics.Arcade.Sprite;
   private enemyBullets: Phaser.Physics.Arcade.Group;
-  private player
-  constructor(scene: Phaser.Scene, x: number, y: number,player) {
+  private player: IsPlayer;
+  constructor(scene: Phaser.Scene, x: number, y: number,player: IsPlayer,range: number) {
     super(scene, x, y,);
     this.player = player
-    this.enemy = new EnemyPlatformer(this.scene, 0, 40,this,this.player);
-    this.healthBarBack = new HealthBar(this.scene, -this.enemy.width / 2, 0).setOrigin(0, 0);
-    this.healthBar = new HealthBar(this.scene, -this.enemy.width / 2, 0).setOrigin(0, 0);
+    this.enemy = new Enemy(this.scene, 0, 40,this,this.player,range);
+    this.healthBarBack = new HealthBar(this.scene, -this.enemy.width / 2, 0,1).setOrigin(0, 0);
+    this.healthBar = new HealthBar(this.scene, -this.enemy.width / 2, 0,1).setOrigin(0, 0);
+    
+    this.healthBarBack.setBar(this.enemy.getHealthStatus());
     this.healthBar.setBar(this.enemy.getHealthStatus());
     this.healthBarBack.tint = 0x00000;
     this.enemyBullets = this.scene.physics.add.group();
@@ -28,8 +32,13 @@ export class EnemyPlatformerContainer extends Phaser.GameObjects.Container {
   }
 
 
-  public getEnemy(): EnemyPlatformer {
+  public getEnemy(): Enemy {
     return this.enemy;
+  }
+
+
+  public getHealthBar(): HealthBar {
+    return this.healthBar,this.healthBarBack
   }
 
 

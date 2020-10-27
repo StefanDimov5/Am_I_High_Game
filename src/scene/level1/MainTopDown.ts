@@ -1,25 +1,24 @@
 import { World } from 'matter';
 import { Tilemaps } from 'phaser';
 import { Coin } from '../../items/Coin';
-import { EnemyPlatformer } from '../../enemies/EnemyPlatformer';
-import { EnemyPlatformerContainer } from '../../enemies/EnemyPlatformerContainer';
 import { GameApp } from '../../game';
 import { PlayerStats } from '../../Player/PlayerStats';
 import { PlayerPlatformer } from '../../Player/PlayerTypes/PlayerPlatformer';
 import { PlayerTopDown } from '../../Player/PlayerTypes/PlayerTopDown';
 import { Chest } from '../../items/Chest';
+import { EnemyContainer } from '../../enemies/EnemyContainer';
+import { Enemy } from '../../enemies/Enemy';
 
 export class MainTopDown extends Phaser.Scene {
   private playerStats: PlayerStats;
-  private coinScoreText: Phaser.GameObjects.Text;
   private chestQuantity: number = 0;
   private chestQuantityText: Phaser.GameObjects.Text;
   private healthText: Phaser.GameObjects.Text;
   private playerTopDown: PlayerTopDown;
-  private enemyPlatformer: EnemyPlatformer;
-  private enemyContainer: EnemyPlatformerContainer;
-  private enemies: EnemyPlatformer[] = [];
-  private enemiesContainers: EnemyPlatformerContainer[] = [];
+  private enemyPlatformer: Enemy;
+  private enemyContainer: EnemyContainer;
+  private enemies: Enemy[] = [];
+  private enemiesContainers: EnemyContainer[] = [];
   private chests: Chest[] = [];
   private bg1: Phaser.GameObjects.TileSprite;
   private bg2: Phaser.GameObjects.TileSprite;
@@ -27,37 +26,33 @@ export class MainTopDown extends Phaser.Scene {
   private bg4: Phaser.GameObjects.TileSprite;
   private rt;
   private vision;
-
-  private minimap;
-
   private map: Tilemaps.Tilemap;
   private ground: Tilemaps.StaticTilemapLayer;
   private walls: Tilemaps.StaticTilemapLayer;
   private objLayer: Tilemaps.ObjectLayer;
   private playerSpawnObj: Phaser.GameObjects.Sprite;
+  
+  private timer:Phaser.Time.TimerEvent
+  private timerText:Phaser.GameObjects.Text
 
   constructor() {
     super('MainTopDown');
   }
 
   create() {
-    this.createTileMap();
-    this.chestSpawn();
-    this.playerSpawn();
-    this.enemySpawn();
-    
-    this.rt = this.make.renderTexture(
-      {
-        width: 3200,
-        height: 912,
-      },
-      true
-      );
+      this.createTileMap();
+      this.chestSpawn();
+      this.playerSpawn();
+      this.enemySpawn();
+      
+      this.rt = this.make.renderTexture({
+          width: 3200,
+          height: 912,
+        },true);
       
       this.rt.fill(0x000000, 1);
       
       
-      // // set a dark blue tint
       this.rt.draw(this.ground, this.chests, this.enemies);
       this.rt.setTint(0x000000);
       this.vision = this.make.image({
@@ -71,13 +66,18 @@ export class MainTopDown extends Phaser.Scene {
       this.rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
       this.rt.mask.invertAlpha = true;
       this.setUI();
-    this.collisions();
-    this.cameraSetup();
-    this.bulletCollisions();
+      this.collisions();
+      this.cameraSetup();
+      this.bulletCollisions();
+      this.timer = this.time.addEvent({
+        delay:100000,
+        callback :this.startScene,
+        callbackScope: this
+      })
   }
 
   update() {
-
+    
     this.enemiesContainers.forEach((enemyContainer) => {
       enemyContainer.updateBar();
       enemyContainer.updatePosition();
@@ -90,7 +90,11 @@ export class MainTopDown extends Phaser.Scene {
     this.playerTopDown.controlls();
     this.updateUi();
   }
-
+  startScene() {
+    this.scene.stop()
+      this.scene.start("MainShooter")
+  }
+  
   public createTileMap(): void {
     this.map = this.make.tilemap({ key: 'mapTopDown' });
     let terrain = this.map.addTilesetImage('mainlevbuild', 'mapAtlasTopDown');
@@ -99,8 +103,6 @@ export class MainTopDown extends Phaser.Scene {
     this.walls = this.map.createStaticLayer('Walls', terrain, 0, 0);
 
     let overPlayer = this.map.createStaticLayer('OverPlayer', terrain, 0, 0);
-
-    // let grass = this.map.createStaticLayer('inFront', terrain, 0, 0);
     this.objLayer = this.map.getObjectLayer('Objects');
     this.physics.world.setBounds(0, 0, this.walls.width, this.walls.height);
 
@@ -155,7 +157,7 @@ export class MainTopDown extends Phaser.Scene {
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyContainer = new EnemyPlatformerContainer(this, enemyObj.x, enemyObj.y,this.playerTopDown);
+        this.enemyContainer = new EnemyContainer(this, enemyObj.x, enemyObj.y,this.playerTopDown,250);
         this.enemies.push(this.enemyContainer.getEnemy().setGravityY(0));
 
         this.enemiesContainers.push(this.enemyContainer);
@@ -174,7 +176,7 @@ export class MainTopDown extends Phaser.Scene {
     });
   }
 
-  public playerShootCollide(enemy: EnemyPlatformer, bullet) {
+  public playerShootCollide(enemy: Enemy, bullet) {
     bullet.destroy();
 
     enemy.takeDamage(this.playerTopDown.getDamage());
@@ -194,16 +196,16 @@ export class MainTopDown extends Phaser.Scene {
     this.add.image(10, 40, 'heart').setScale(0.7).setOrigin(0).setScrollFactor(0);
     this.healthText = this.add.text(60, 40, `${this.playerTopDown.getPlayerStats().getHealth()}`).setFontSize(50).setOrigin(0).setScrollFactor(0);
 
-    this.add.image(10, 110, 'coin').setOrigin(0).setScrollFactor(0);
-    this.coinScoreText = this.add.text(60, 110, `${this.playerTopDown.getPlayerStats().getScore()}`).setFontSize(50).setOrigin(0).setScrollFactor(0);
+    this.add.image(10, 110, 'chest', 1).setOrigin(0).setScrollFactor(0).setScale(1.2);
+    this.chestQuantityText = this.add.text(65, 110, `${this.chestQuantity} Left`).setFontSize(50).setOrigin(0).setScrollFactor(0);
 
-    this.add.image(10, 170, 'chest', 1).setOrigin(0).setScrollFactor(0).setScale(1.2);
-    this.chestQuantityText = this.add.text(65, 170, `${this.chestQuantity} Left`).setFontSize(50).setOrigin(0).setScrollFactor(0);
+    this.timerText = this.add.text(800, 40, `${this.timer}`).setFontSize(50).setOrigin(0.5).setScrollFactor(0);
   }
 
   public updateUi(): void {
     this.healthText.text = this.playerTopDown.getPlayerStats().getHealth().toString();
-    this.coinScoreText.text = this.playerTopDown.getPlayerStats().getScore().toString();
     this.chestQuantityText.text = `${this.chestQuantity} Left`;
+
+    this.timerText.text = `${Math.floor(100 - this.timer.getElapsedSeconds())}`
   }
 }
