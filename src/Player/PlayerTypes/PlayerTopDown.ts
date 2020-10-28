@@ -66,7 +66,7 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
     this.scene.input.on("pointerdown",(pointer)=>{
       if (this.canShoot) {
         this.canShoot = false;
-          this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'knife', 13);
+          this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'bullet', 1);
         this.bullet.setSize(16, 8);
         this.bullets.add(this.bullet);
         this.scene.physics.moveTo(this.bullet,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).y , 1000);

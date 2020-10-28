@@ -147,7 +147,7 @@ this.shootingEvent2.paused = true
   
     public shootAttack1() {
         if (this.active) {
-          this.bullet = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y, 'knife', 13);
+          this.bullet = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y, 'bullet', 1);
           this.bullets.add(this.bullet);
           this.scene.physics.moveTo(this.bullet,this.player.x,this.player.y,500)
           this.bullet.setSize(16, 8);
@@ -157,8 +157,8 @@ this.shootingEvent2.paused = true
 
     public shootAttack2() {
       if (this.active) {
-        let bullet = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y + 200, 'knife', 13);
-        let bullet2 = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y - 200, 'knife', 13);
+        let bullet = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y + 200, 'bullet', 1);
+        let bullet2 = this.scene.physics.add.sprite(this.x + this.container.x, this.y + this.container.y - 200, 'bullet', 1);
         this.bullets.add(bullet);
         this.bullets.add(bullet2);
         this.scene.physics.moveTo(bullet,this.player.x,this.player.y,500)

@@ -86,6 +86,7 @@ export class BossTopDownScene extends Phaser.Scene {
 
       this.physics.add.overlap(this.playerTopDown.getBullet(), this.boss.getBoss().getEnemies(), this.playerShootCollide, null, this);
       this.physics.add.collider(this.playerTopDown.getBullet(), this.walls, this.bulletHit, null, this);
+      this.physics.add.overlap(this.boss.getBoss().getBullets(), this.playerTopDown, this.enemyShootCollide, null, this);
       this.boss.getBoss().getEnemyContainers().forEach((enemy) => {
           this.physics.add.overlap(enemy.getEnemyBullet(), this.playerTopDown, this.enemyShootCollide, null, this);
           this.physics.add.collider(enemy.getEnemyBullet(), this.walls, this.bulletHit, null, this);
