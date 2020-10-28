@@ -1,9 +1,14 @@
+import { AudioManager } from "../../audio/AudioManager";
+
 export class IntroSmokingScene extends Phaser.Scene {
   constructor() {
     super('IntroSmokingScene');
   }
 
   create() {
+    this.input.on('pointerdown', () => {
+      AudioManager.getInstance(this).playCutSceneSong(true)
+    });
     this.cameras.main.fadeIn(2000);
     let cutScene = this.physics.add.sprite(0, 0, 'SmokinInRoom').setOrigin(0);
     let anima = this.anims.create({

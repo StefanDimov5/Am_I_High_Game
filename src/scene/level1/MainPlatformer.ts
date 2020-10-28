@@ -6,6 +6,7 @@ import { PlayerStats } from '../../Player/PlayerStats';
 import { PlayerPlatformer } from '../../Player/PlayerTypes/PlayerPlatformer';
 import { Enemy } from '../../enemies/Enemy';
 import { EnemyContainer } from '../../enemies/EnemyContainer';
+import { AudioManager } from '../../audio/AudioManager';
 
 export class MainPlatformer extends Phaser.Scene {
   private playerStats: PlayerStats;
@@ -26,14 +27,16 @@ export class MainPlatformer extends Phaser.Scene {
   private platforms: Tilemaps.StaticTilemapLayer;
   private objLayer: Tilemaps.ObjectLayer;
   private playerSpawnObj: Phaser.GameObjects.Sprite;
-  private timer:Phaser.Time.TimerEvent
-  private timerText:Phaser.GameObjects.Text
+  private timer: Phaser.Time.TimerEvent
+  private timerText: Phaser.GameObjects.Text
 
   constructor() {
     super('MainPlatformer');
   }
 
   create() {
+    AudioManager.getInstance(this).playCutSceneSong(false)
+    AudioManager.getInstance(this).playBackgroundMusic(true)
     let cameraFade1 = this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.once('camerafadeincomplete', function (camera) {
       camera.fadeOut(1000, 0, 0, 0);
@@ -56,9 +59,9 @@ export class MainPlatformer extends Phaser.Scene {
     this.setUI();
     this.bulletCollisions();
     this.timer = this.time.addEvent({
-      delay:100000,
-      callback :this.startScene,
-callbackScope: this
+      delay: 100000,
+      callback: this.startScene,
+      callbackScope: this
     })
 
     // (100000,()=>{
@@ -69,7 +72,7 @@ callbackScope: this
 
   startScene() {
     this.scene.stop()
-      this.scene.start("MainTopDown")
+    this.scene.start("MainTopDown")
   }
   update() {
     this.enemiesContainers.forEach((enemyContainer) => {
@@ -123,9 +126,9 @@ callbackScope: this
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyContainer = new EnemyContainer(this, enemyObj.x, enemyObj.y - 100,this.playerPlatformer,500);
+        this.enemyContainer = new EnemyContainer(this, enemyObj.x, enemyObj.y - 100, this.playerPlatformer, 500);
         this.enemies.push(this.enemyContainer.getEnemy());
-
+        this.enemyContainer.getEnemy().setHealth()
         this.enemiesContainers.push(this.enemyContainer);
       }
     });
@@ -169,7 +172,7 @@ callbackScope: this
   }
 
   public playerShootCollide(enemy: Enemy, bullet) {
-    
+
     enemy.takeDamage(this.playerPlatformer.getDamage());
     bullet.destroy();
   }
@@ -196,7 +199,7 @@ callbackScope: this
   public updateUi(): void {
     this.healthText.text = this.playerPlatformer.getPlayerStats().getHealth().toString();
     this.coinScoreText.text = this.playerPlatformer.getPlayerStats().getScore().toString();
-    if(this.playerPlatformer.getPlayerStats().getScore() == this.coins.length *100) {
+    if (this.playerPlatformer.getPlayerStats().getScore() == this.coins.length * 100) {
       this.scene.stop()
       this.scene.start("MainTopDown")
     }

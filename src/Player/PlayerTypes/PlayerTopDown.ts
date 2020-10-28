@@ -1,3 +1,4 @@
+import { AudioManager } from '../../audio/AudioManager';
 import { IsPlayer } from '../IsPlayer';
 import { PlayerStats } from '../PlayerStats';
 
@@ -7,7 +8,7 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
   private bullets: Phaser.Physics.Arcade.Group;
   private damage: number = 5;
   private canShoot: boolean = true;
-  private cursor:Phaser.Physics.Arcade.Sprite
+  private cursor: Phaser.Physics.Arcade.Sprite
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'mainHero');
@@ -23,7 +24,7 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
     this.scene.add.existing(this);
   }
 
-  public getBullet() {
+  public getBullet(): Phaser.Physics.Arcade.Group {
     return this.bullets;
   }
 
@@ -34,7 +35,7 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
   public getDamage(): number {
     return this.damage;
   }
-  public controlls() {
+  public controlls(): void {
     let keys = this.scene.input.keyboard.createCursorKeys();
     let W = this.scene.input.keyboard.addKey('W');
     let A = this.scene.input.keyboard.addKey('A');
@@ -63,37 +64,35 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
         }
       }
     }
-    this.scene.input.on("pointerdown",(pointer)=>{
+    this.scene.input.on("pointerdown", (pointer) => {
       if (this.canShoot) {
+        AudioManager.getInstance(this.scene).playShoot();
         this.canShoot = false;
-          this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'bullet', 1);
+        this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'bullet', 1);
         this.bullet.setSize(16, 8);
         this.bullets.add(this.bullet);
-        this.scene.physics.moveTo(this.bullet,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).y , 1000);
-        // this.scene.time.delayedCall(500, () => {
-          //   this.bullet.destroy();
-          // });
-          
-          this.play('mainHeroShoot', true);
-          this.scene.time.delayedCall(
-            500,
-            () => {
-              this.canShoot = true;
-            },
-            null,
-            this
-            );
-          }
-        }
-      )
-      this.scene.input.on("pointermove",(pointer)=>{
-        if(this.x > this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x){
-          this.flipX = true
-        }else{
-          this.flipX = false
-        }
+        this.scene.physics.moveTo(this.bullet, this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x, this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y, 1000);
+
+        this.play('mainHeroShoot', true);
+        this.scene.time.delayedCall(
+          500,
+          () => {
+            this.canShoot = true;
+          },
+          null,
+          this
+        );
       }
-        )
+    }
+    )
+    this.scene.input.on("pointermove", (pointer) => {
+      if (this.x > this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x) {
+        this.flipX = true;
+      } else {
+        this.flipX = false;
+      }
+    }
+    );
   }
 
 

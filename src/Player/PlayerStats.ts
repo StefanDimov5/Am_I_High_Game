@@ -2,7 +2,7 @@ import { IsPlayer } from './IsPlayer';
 
 export class PlayerStats {
   private score: number = 0;
-  private health: number = 5;
+  private health: number = 1;
   private level: number = 0;
   private player: IsPlayer;
 

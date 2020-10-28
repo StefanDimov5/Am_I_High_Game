@@ -31,53 +31,53 @@ export class MainTopDown extends Phaser.Scene {
   private walls: Tilemaps.StaticTilemapLayer;
   private objLayer: Tilemaps.ObjectLayer;
   private playerSpawnObj: Phaser.GameObjects.Sprite;
-  
-  private timer:Phaser.Time.TimerEvent
-  private timerText:Phaser.GameObjects.Text
+
+  private timer: Phaser.Time.TimerEvent
+  private timerText: Phaser.GameObjects.Text
 
   constructor() {
     super('MainTopDown');
   }
 
   create() {
-      this.createTileMap();
-      this.chestSpawn();
-      this.playerSpawn();
-      this.enemySpawn();
-      
-      this.rt = this.make.renderTexture({
-          width: 3200,
-          height: 912,
-        },true);
-      
-      this.rt.fill(0x000000, 1);
-      
-      
-      this.rt.draw(this.ground, this.chests, this.enemies);
-      this.rt.setTint(0x000000);
-      this.vision = this.make.image({
-        x: this.playerTopDown.x,
-        y: this.playerTopDown.y,
-        key: 'light',
-        add: false,
-      });
-      this.vision.scale = 1;
-      
-      this.rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
-      this.rt.mask.invertAlpha = true;
-      this.setUI();
-      this.collisions();
-      this.cameraSetup();
-      this.bulletCollisions();
-      this.timer = this.time.addEvent({
-        delay:100000,
-        callback :this.startScene,
-        callbackScope: this
-      })
+    this.createTileMap();
+    this.chestSpawn();
+    this.playerSpawn();
+    this.enemySpawn();
+
+    this.rt = this.make.renderTexture({
+      width: 3200,
+      height: 912,
+    }, true);
+
+    this.rt.fill(0x000000, 1);
+
+
+    this.rt.draw(this.ground, this.chests, this.enemies);
+    this.rt.setTint(0x000000);
+    this.vision = this.make.image({
+      x: this.playerTopDown.x,
+      y: this.playerTopDown.y,
+      key: 'light',
+      add: false,
+    });
+    this.vision.scale = 1;
+
+    this.rt.mask = new Phaser.Display.Masks.BitmapMask(this, this.vision);
+    this.rt.mask.invertAlpha = true;
+    this.setUI();
+    this.collisions();
+    this.cameraSetup();
+    this.bulletCollisions();
+    this.timer = this.time.addEvent({
+      delay: 100000,
+      callback: this.startScene,
+      callbackScope: this
+    })
   }
 
   update() {
-    
+
     this.enemiesContainers.forEach((enemyContainer) => {
       enemyContainer.updateBar();
       enemyContainer.updatePosition();
@@ -92,9 +92,9 @@ export class MainTopDown extends Phaser.Scene {
   }
   startScene() {
     this.scene.stop()
-      this.scene.start("MainShooter")
+    this.scene.start("MainShooter")
   }
-  
+
   public createTileMap(): void {
     this.map = this.make.tilemap({ key: 'mapTopDown' });
     let terrain = this.map.addTilesetImage('mainlevbuild', 'mapAtlasTopDown');
@@ -124,13 +124,13 @@ export class MainTopDown extends Phaser.Scene {
 
   public playerChestCollect(playerPlatformer: PlayerTopDown, chest: Chest): void {
     this.playerTopDown.getPlayerStats().scoreUp(chest.getCoinScore());
-    
-    if(!chest.isOpen()){
+
+    if (!chest.isOpen()) {
       this.chestQuantity--;
     }
     chest.open();
     console.log(chest.isOpen());
-    
+
     chest.setFrame(0);
   }
 
@@ -138,7 +138,7 @@ export class MainTopDown extends Phaser.Scene {
     this.objLayer.objects.forEach((playerSpawn) => {
       if (playerSpawn.name == 'PlayerSpawn') {
         this.playerTopDown = new PlayerTopDown(this, playerSpawn.x, playerSpawn.y);
-        this.lights.addLight(this.playerTopDown.x,this.playerTopDown.y,150)
+        this.lights.addLight(this.playerTopDown.x, this.playerTopDown.y, 150)
       }
     });
   }
@@ -157,7 +157,7 @@ export class MainTopDown extends Phaser.Scene {
   public enemySpawn(): void {
     let enemiesObj = this.objLayer.objects.forEach((enemyObj) => {
       if (enemyObj.name == 'Enemy') {
-        this.enemyContainer = new EnemyContainer(this, enemyObj.x, enemyObj.y,this.playerTopDown,250);
+        this.enemyContainer = new EnemyContainer(this, enemyObj.x, enemyObj.y, this.playerTopDown, 250);
         this.enemies.push(this.enemyContainer.getEnemy().setGravityY(0));
 
         this.enemiesContainers.push(this.enemyContainer);

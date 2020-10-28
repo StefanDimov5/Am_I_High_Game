@@ -1,3 +1,4 @@
+import { AudioManager } from '../../audio/AudioManager';
 import { IsPlayer } from '../IsPlayer';
 import { PlayerStats } from '../PlayerStats';
 
@@ -59,37 +60,41 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
       if ((keys.space.isDown || W.isDown) && (this.body.blocked.down || this.body.blocked.left || this.body.blocked.right)) {
         this.setVelocityY(-500);
       }
-      this.scene.input.on("pointerdown",(pointer)=>{
+      if (C.isDown) {
+        this.scene.scene.restart()
+      }
+      this.scene.input.on("pointerdown", (pointer) => {
         if (this.canShoot) {
+          AudioManager.getInstance(this.scene).playShoot()
           this.canShoot = false;
-            this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'bullet', 1);
+          this.bullet = this.scene.physics.add.sprite(this.x, this.y, 'bullet', 1);
           this.bullet.setSize(16, 8);
           this.bullets.add(this.bullet);
-          this.scene.physics.moveTo(this.bullet,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x,this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).y , 1000);
+          this.scene.physics.moveTo(this.bullet, this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x, this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y, 1000);
           // this.scene.time.delayedCall(500, () => {
-            //   this.bullet.destroy();
-            // });
-            
-            this.play('mainHeroShoot', true);
-            this.scene.time.delayedCall(
-              500,
-              () => {
-                this.canShoot = true;
-              },
-              null,
-              this
-              );
-            }
-          }
-        )
-        this.scene.input.on("pointermove",(pointer)=>{
-          if(this.x > this.scene.cameras.main.getWorldPoint(pointer.x,pointer.y).x){
-            this.flipX = true
-          }else{
-            this.flipX = false
-          }
+          //   this.bullet.destroy();
+          // });
+
+          this.play('mainHeroShoot', true);
+          this.scene.time.delayedCall(
+            500,
+            () => {
+              this.canShoot = true;
+            },
+            null,
+            this
+          );
         }
-          )
+      }
+      )
+      this.scene.input.on("pointermove", (pointer) => {
+        if (this.x > this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x) {
+          this.flipX = true
+        } else {
+          this.flipX = false
+        }
+      }
+      )
     }
   }
 
@@ -123,7 +128,9 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
   }
 
   public die(): void {
-    this.setActive(false);
-    this.setAlpha(0.5);
+    this.scene.scene.stop()
+    this.scene.scene.start("GameOver")
+    // this.setActive(false);
+    // this.setAlpha(0.5);
   }
 }

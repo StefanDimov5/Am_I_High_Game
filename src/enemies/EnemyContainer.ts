@@ -13,9 +13,9 @@ export class EnemyContainer extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number,player: IsPlayer,range: number) {
     super(scene, x, y,);
     this.player = player
-    this.enemy = new Enemy(this.scene, 0, 40,this,this.player,range);
-    this.healthBarBack = new HealthBar(this.scene, -this.enemy.width / 2, 0,1).setOrigin(0, 0);
-    this.healthBar = new HealthBar(this.scene, -this.enemy.width / 2, 0,1).setOrigin(0, 0);
+    this.enemy = new Enemy(this.scene, 0, 70,this,this.player,range);
+    this.healthBarBack = new HealthBar(this.scene, -this.enemy.width / 2, 0,2).setOrigin(0, 0);
+    this.healthBar = new HealthBar(this.scene, -this.enemy.width / 2, 0,2).setOrigin(0, 0);
     
     this.healthBarBack.setBar(this.enemy.getHealthStatus());
     this.healthBar.setBar(this.enemy.getHealthStatus());
@@ -53,9 +53,9 @@ export class EnemyContainer extends Phaser.GameObjects.Container {
 
   public updatePosition() {
     this.healthBar.x = this.enemy.x - this.enemy.width / 2;
-    this.healthBar.y = this.enemy.y - 40;
+    this.healthBar.y = this.enemy.y - 60;
     this.healthBarBack.x = this.enemy.x - this.enemy.width / 2;
-    this.healthBarBack.y = this.enemy.y - 40;
+    this.healthBarBack.y = this.enemy.y - 60;
   }
 
 

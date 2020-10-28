@@ -13,10 +13,10 @@ export class EnemyKamikaze extends Phaser.Physics.Arcade.Sprite {
 
     if (this != undefined) {
       scene.physics.world.enable(this);
-      this.setScale(1.5);
+      this.setScale(0.7);
       this.setCollideWorldBounds(true);
     //   this.enemyAttack();
-      this.flipX = false;
+      this.flipX = true;
 
       this.scene.add.existing(this);
     }

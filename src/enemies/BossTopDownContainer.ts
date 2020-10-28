@@ -9,12 +9,12 @@ export class BossTopDownContainer extends Phaser.GameObjects.Container {
   private bullet: Phaser.Physics.Arcade.Sprite;
   private enemyBullets: Phaser.Physics.Arcade.Group;
   private player
-  constructor(scene: Phaser.Scene, x: number, y: number,player, enemyLayer) {
+  constructor(scene: Phaser.Scene, x: number, y: number, player, enemyLayer) {
     super(scene, x, y);
     this.player = player
-    this.boss = new BossTopDown(this.scene, 0, 40,this,this.player,enemyLayer);
-    this.healthBarBack = new HealthBar(this.scene,-this.boss.width / 2,0,6).setOrigin(0, 0)
-    this.healthBar = new HealthBar(this.scene,-this.boss.width / 2,0,6).setOrigin(0, 0);
+    this.boss = new BossTopDown(this.scene, 0, 40, this, this.player, enemyLayer);
+    this.healthBarBack = new HealthBar(this.scene, -this.boss.width / 2, 0, 6).setOrigin(0, 0)
+    this.healthBar = new HealthBar(this.scene, -this.boss.width / 2, 0, 6).setOrigin(0, 0);
     this.healthBar.setBar(this.boss.getHealthStatus());
 
     this.healthBarBack.setBar(this.boss.getHealthStatus())
@@ -31,7 +31,7 @@ export class BossTopDownContainer extends Phaser.GameObjects.Container {
   }
 
 
-  public updateBar():void {
+  public updateBar(): void {
     this.healthBar.updateBar(this.boss.getHealthStatus());
     if (!this.boss.active) {
       this.healthBar.destroy();
