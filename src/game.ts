@@ -23,12 +23,12 @@ class GameApp extends Phaser.Game {
         physics: {
           default: 'arcade',
           arcade: {
-            debug: true,
+            debug: false,
           },
         },
         width: 1600,
         height: 912,
-        scene: [Preload, IntroSmokingScene, WalkToShop, MainTopDown, MainPlatformer,BossTopDownScene,MainShooter,MainMenu,GameOver],
+        scene: [Preload, IntroSmokingScene, WalkToShop, MainTopDown, MainPlatformer, BossTopDownScene, MainShooter, MainMenu, GameOver],
       };
     }
 

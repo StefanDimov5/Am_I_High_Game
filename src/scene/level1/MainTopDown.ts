@@ -200,12 +200,17 @@ export class MainTopDown extends Phaser.Scene {
     this.chestQuantityText = this.add.text(65, 110, `${this.chestQuantity} Left`).setFontSize(50).setOrigin(0).setScrollFactor(0);
 
     this.timerText = this.add.text(800, 40, `${this.timer}`).setFontSize(50).setOrigin(0.5).setScrollFactor(0);
+
+    this.add.sprite(1400, 40, "controlls", 0).setOrigin(0.5, 0).setScrollFactor(0)
   }
 
   public updateUi(): void {
     this.healthText.text = this.playerTopDown.getPlayerStats().getHealth().toString();
     this.chestQuantityText.text = `${this.chestQuantity} Left`;
-
+    if (this.chestQuantity == 0) {
+      this.scene.stop()
+      this.scene.start("MainShooter")
+    }
     this.timerText.text = `${Math.floor(100 - this.timer.getElapsedSeconds())}`
   }
 }

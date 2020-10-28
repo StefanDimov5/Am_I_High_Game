@@ -38,15 +38,17 @@ export class BossTopDownScene extends Phaser.Scene {
 
   create() {
     this.createTileMap()
-    
-    
+
+
     this.playerTopDown = new PlayerTopDown(this, 100, 300);
-    this.boss = new BossTopDownContainer(this,1400,100,this.playerTopDown, this.objLayer)
+    this.boss = new BossTopDownContainer(this, 1400, 100, this.playerTopDown, this.objLayer)
     this.collisions()
-    this.enemyContainers =  this.boss.getBoss().getEnemyContainers()
+    this.enemyContainers = this.boss.getBoss().getEnemyContainers()
+    this.setUI()
   }
 
   update() {
+    this.updateUi()
     this.playerTopDown.controlls();
     this.boss.getBoss().enemyUpdate()
     this.boss.getBoss().canShoot()
@@ -82,24 +84,24 @@ export class BossTopDownScene extends Phaser.Scene {
   }
 
   public bulletCollisions() {
-      this.physics.add.overlap(this.playerTopDown.getBullet(), this.boss.getBoss(), this.playerShootCollide, null, this);
+    this.physics.add.overlap(this.playerTopDown.getBullet(), this.boss.getBoss(), this.playerShootCollide, null, this);
 
-      this.physics.add.overlap(this.playerTopDown.getBullet(), this.boss.getBoss().getEnemies(), this.playerShootCollide, null, this);
-      this.physics.add.collider(this.playerTopDown.getBullet(), this.walls, this.bulletHit, null, this);
-      this.physics.add.overlap(this.boss.getBoss().getBullets(), this.playerTopDown, this.enemyShootCollide, null, this);
-      this.boss.getBoss().getEnemyContainers().forEach((enemy) => {
-          this.physics.add.overlap(enemy.getEnemyBullet(), this.playerTopDown, this.enemyShootCollide, null, this);
-          this.physics.add.collider(enemy.getEnemyBullet(), this.walls, this.bulletHit, null, this);
-        });
+    this.physics.add.overlap(this.playerTopDown.getBullet(), this.boss.getBoss().getEnemies(), this.playerShootCollide, null, this);
+    this.physics.add.collider(this.playerTopDown.getBullet(), this.walls, this.bulletHit, null, this);
+    this.physics.add.overlap(this.boss.getBoss().getBullets(), this.playerTopDown, this.enemyShootCollide, null, this);
+    this.boss.getBoss().getEnemyContainers().forEach((enemy) => {
+      this.physics.add.overlap(enemy.getEnemyBullet(), this.playerTopDown, this.enemyShootCollide, null, this);
+      this.physics.add.collider(enemy.getEnemyBullet(), this.walls, this.bulletHit, null, this);
+    });
   }
 
-  public playerShootCollide( enemy: Enemy,bullet) {
-    if(enemy.visible){
+  public playerShootCollide(enemy: Enemy, bullet) {
+    if (enemy.visible) {
       bullet.destroy();
 
-  enemy.takeDamage(this.playerTopDown.getDamage());
+      enemy.takeDamage(this.playerTopDown.getDamage());
 
-}
+    }
     console.log(enemy.getHealthStatus());
   }
 
@@ -122,4 +124,3 @@ export class BossTopDownScene extends Phaser.Scene {
   }
 
 }
-  

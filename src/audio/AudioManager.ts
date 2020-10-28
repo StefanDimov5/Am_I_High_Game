@@ -19,12 +19,12 @@ export class AudioManager {
         })
 
         this.backgroundMusic = this.scene.sound.add("backgroundMusic", {
-            volume: 0.2,
+            volume: 0.5,
             loop: true
         })
 
         this.gameOver = this.scene.sound.add("gameOver", {
-            volume: 0.2,
+            volume: 0.6,
             loop: true
         })
 

@@ -1,3 +1,4 @@
+import { AudioManager } from "../audio/AudioManager";
 import { Enemy } from "./Enemy";
 import { EnemyContainer } from "./EnemyContainer";
 
@@ -112,10 +113,8 @@ export class BossTopDown extends Phaser.Physics.Arcade.Sprite {
     this.enemyContainers.forEach((enemyContainer) => {
       if (!enemyContainer.getEnemy().active) {
         deadCount++;
-
       }
-
-    })
+    });
     if (deadCount == this.enemyContainers.length) {
       this.shootingEvent2.paused = false;
     }
@@ -187,8 +186,10 @@ export class BossTopDown extends Phaser.Physics.Arcade.Sprite {
 
   public takeDamage(damage: number): void {
     this.health -= damage;
+    AudioManager.getInstance(this.scene).playHurt()
     if (this.health <= 0) {
-      this.enemyDestroy();
+      this.scene.scene.stop()
+      this.scene.scene.start("MainMenu")
     }
   }
 
@@ -199,6 +200,5 @@ export class BossTopDown extends Phaser.Physics.Arcade.Sprite {
   public enemyDestroy(): void {
     this.setVisible(false);
     this.setActive(false);
-    this.destroy(true);
   }
 }

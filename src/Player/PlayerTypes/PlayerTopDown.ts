@@ -64,6 +64,9 @@ export class PlayerTopDown extends Phaser.Physics.Arcade.Sprite implements IsPla
         }
       }
     }
+    if (C.isDown) {
+      this.scene.scene.restart()
+    }
     this.scene.input.on("pointerdown", (pointer) => {
       if (this.canShoot) {
         AudioManager.getInstance(this.scene).playShoot();

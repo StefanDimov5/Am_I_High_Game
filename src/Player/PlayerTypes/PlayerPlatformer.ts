@@ -71,9 +71,6 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
           this.bullet.setSize(16, 8);
           this.bullets.add(this.bullet);
           this.scene.physics.moveTo(this.bullet, this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).x, this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y).y, 1000);
-          // this.scene.time.delayedCall(500, () => {
-          //   this.bullet.destroy();
-          // });
 
           this.play('mainHeroShoot', true);
           this.scene.time.delayedCall(
@@ -130,7 +127,5 @@ export class PlayerPlatformer extends Phaser.Physics.Arcade.Sprite implements Is
   public die(): void {
     this.scene.scene.stop()
     this.scene.scene.start("GameOver")
-    // this.setActive(false);
-    // this.setAlpha(0.5);
   }
 }

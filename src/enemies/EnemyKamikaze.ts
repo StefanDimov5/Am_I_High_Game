@@ -1,3 +1,4 @@
+import { AudioManager } from "../audio/AudioManager";
 import { IsPlayer } from "../Player/IsPlayer";
 
 export class EnemyKamikaze extends Phaser.Physics.Arcade.Sprite {
@@ -5,17 +6,17 @@ export class EnemyKamikaze extends Phaser.Physics.Arcade.Sprite {
   private targetX
   private targetY
 
-  constructor(scene: Phaser.Scene, x: number, y: number,targetX,targetY) {
+  constructor(scene: Phaser.Scene, x: number, y: number, targetX, targetY) {
     super(scene, x, y, 'enemy');
     this.targetX = targetX
     this.targetY = targetY
-    this.play("enemyIdle",true)
+    this.play("enemyIdle", true)
 
     if (this != undefined) {
       scene.physics.world.enable(this);
       this.setScale(0.7);
       this.setCollideWorldBounds(true);
-    //   this.enemyAttack();
+      //   this.enemyAttack();
       this.flipX = true;
 
       this.scene.add.existing(this);
@@ -23,16 +24,17 @@ export class EnemyKamikaze extends Phaser.Physics.Arcade.Sprite {
   }
 
 
-  public reset(){
-      this.x = 1400,
-      this.y = Phaser.Math.Between(0,900)
-      this.enemyAttack()
+  public reset() {
+    AudioManager.getInstance(this.scene).playHurt()
+    this.x = 1400,
+      this.y = Phaser.Math.Between(0, 900)
+    this.enemyAttack()
   }
 
   public enemyAttack() {
-        if (this.active) {
-          this.scene.physics.moveToObject(this,{x:this.targetX,y:this.targetY}, 250)
-        }
+    if (this.active) {
+      this.scene.physics.moveToObject(this, { x: this.targetX, y: this.targetY }, 250)
+    }
   }
 
   public getHealthStatus(): number {
@@ -42,7 +44,7 @@ export class EnemyKamikaze extends Phaser.Physics.Arcade.Sprite {
   public enemyAnimsInit() {
     this.scene.anims.create({
       key: 'enemyIdle',
-      frameRate:15,
+      frameRate: 15,
       frames: this.scene.anims.generateFrameNames('enemy', {
         start: 1,
         end: 24,

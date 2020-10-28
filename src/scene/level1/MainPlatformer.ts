@@ -80,19 +80,21 @@ export class MainPlatformer extends Phaser.Scene {
       enemyContainer.updatePosition();
       enemyContainer.getEnemy().canShootPlayer()
     });
-    if (this.playerPlatformer.body.velocity.x > 0) {
-      this.bg2.x -= 0.01;
-      this.bg3.x -= 0.1;
-      this.bg4.x -= 0.3;
+    if (this.playerPlatformer.active) {
+      if (this.playerPlatformer.body.velocity.x > 0) {
+        this.bg2.x -= 0.01;
+        this.bg3.x -= 0.1;
+        this.bg4.x -= 0.3;
+      }
+      if (this.playerPlatformer.body.velocity.x < 0) {
+        this.bg2.x += 0.01;
+        this.bg3.x += 0.1;
+        this.bg4.x += 0.3;
+      }
+      this.playerPlatformer.setVelocityX(0);
+      this.playerPlatformer.controlls();
+      this.updateUi();
     }
-    if (this.playerPlatformer.body.velocity.x < 0) {
-      this.bg2.x += 0.01;
-      this.bg3.x += 0.1;
-      this.bg4.x += 0.3;
-    }
-    this.playerPlatformer.setVelocityX(0);
-    this.playerPlatformer.controlls();
-    this.updateUi();
   }
 
   public setBackground() {
@@ -194,6 +196,7 @@ export class MainPlatformer extends Phaser.Scene {
     this.coinScoreText = this.add.text(60, 110, `${this.playerPlatformer.getPlayerStats().getScore()}`).setFontSize(50).setOrigin(0).setScrollFactor(0);
 
     this.timerText = this.add.text(800, 40, `${this.timer}`).setFontSize(50).setOrigin(0.5).setScrollFactor(0);
+    this.add.sprite(1400, 40, "controlls", 0).setOrigin(0.5, 0).setScrollFactor(0)
   }
 
   public updateUi(): void {

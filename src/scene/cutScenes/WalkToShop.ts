@@ -57,9 +57,8 @@ export class WalkToShop extends Phaser.Scene {
     this.time.delayedCall(
       10000,
       () => {
-        this.cameras.main.fadeOut(1000);
         this.time.delayedCall(
-          1000,
+          6000,
           () => {
             this.scene.start('MainPlatformer');
           },
@@ -70,9 +69,19 @@ export class WalkToShop extends Phaser.Scene {
       null,
       this
     );
+    this.add.text(1200, 800, "PRESS SPACE TO SKIP").setColor("red").setFontSize(30).setFontStyle("bold");
   }
 
   update() {
+    this.skipScene();
     this.trippyBg.tilePositionX += 15;
+  }
+
+  public skipScene(): void {
+    let space = this.input.keyboard.addKey("SPACE");
+    if (space.isDown) {
+      this.scene.stop();
+      this.scene.start("MainPlatformer");
+    }
   }
 }

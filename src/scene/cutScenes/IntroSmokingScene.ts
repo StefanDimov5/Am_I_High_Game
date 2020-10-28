@@ -6,10 +6,6 @@ export class IntroSmokingScene extends Phaser.Scene {
   }
 
   create() {
-    this.input.on('pointerdown', () => {
-      AudioManager.getInstance(this).playCutSceneSong(true)
-    });
-    this.cameras.main.fadeIn(2000);
     let cutScene = this.physics.add.sprite(0, 0, 'SmokinInRoom').setOrigin(0);
     let anima = this.anims.create({
       key: 'SmokinInRoom',
@@ -20,14 +16,39 @@ export class IntroSmokingScene extends Phaser.Scene {
       }),
       repeat: -1,
     });
+
     cutScene.play('SmokinInRoom');
+
     this.time.delayedCall(
-      4000,
+      10000,
+      () => {
+        this.add.text(200, 100, "I'm starving. I will go to shop for some food").setColor("black").setFontSize(50).setFontStyle("bold").setBackgroundColor("white");
+      },
+      null,
+      this
+    );
+
+    this.time.delayedCall(
+      15000,
       () => {
         this.scene.start('WalkToShop');
       },
       null,
       this
     );
+
+    this.add.text(1200, 800, "PRESS SPACE TO SKIP").setColor("red").setFontSize(30).setFontStyle("bold");
+  }
+
+  update() {
+    this.skipScene();
+  }
+
+  public skipScene(): void {
+    let space = this.input.keyboard.addKey("SPACE");
+    if (space.isDown) {
+      this.scene.stop();
+      this.scene.start("MainPlatformer");
+    }
   }
 }

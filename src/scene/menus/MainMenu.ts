@@ -6,6 +6,17 @@ export class MainMenu extends Phaser.Scene {
     }
 
     create() {
+        let cutScene = this.physics.add.sprite(0, 0, 'SmokinInRoom').setOrigin(0);
+        let anima = this.anims.create({
+            key: 'SmokinInRoom',
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('SmokinInRoom', {
+                start: 1,
+                end: 4,
+            }),
+            repeat: -1,
+        });
+        cutScene.play('SmokinInRoom');
         let playBtn = this.add.image(800, 200, "playBtn")
         let quitBtn = this.add.image(800, 600, "quitBtn")
 

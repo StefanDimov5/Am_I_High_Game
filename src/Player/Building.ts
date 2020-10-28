@@ -20,6 +20,10 @@ export class Building extends Phaser.GameObjects.Container {
         this.healthBar.updateBar(this.health);
     }
 
+    public getHealth(): number {
+        return this.health;
+    }
+
     public hurt(): void {
         this.health -= 5
         console.log(this.health);

@@ -11,6 +11,7 @@ import { Enemy } from '../../enemies/Enemy';
 import { EnemyKamikaze } from '../../enemies/EnemyKamikaze';
 import { HealthBar } from '../../enemies/HealthBar';
 import { Building } from '../../Player/Building';
+import { AudioManager } from '../../audio/AudioManager';
 
 export class MainShooter extends Phaser.Scene {
     private playerStats: PlayerStats;
@@ -49,6 +50,7 @@ export class MainShooter extends Phaser.Scene {
     startScene() {
         this.scene.stop()
         this.scene.start("BossTopDownScene")
+        this.input.mouse.locked = false
     }
 
     update() {
@@ -81,6 +83,10 @@ export class MainShooter extends Phaser.Scene {
         );
         this.input.on('pointerdown', () => {
             this.shootColider = this.physics.add.overlap(this.cursorShoot, this.enemiesGroup, this.hitEnemy, null, this);
+            AudioManager.getInstance(this).playShoot()
+            this.time.delayedCall(500, () => {
+                this.shootColider.active = false
+            }, null, this)
         });
         this.input.on('pointerup', () => {
             this.shootColider.active = false
@@ -107,17 +113,14 @@ export class MainShooter extends Phaser.Scene {
     public hitPointsSpawn(): void {
         this.map.getObjectLayer('objects').objects.forEach((hitPoint) => {
             if (hitPoint.name == 'HitPoint') {
-
                 this.hitPoints.push(hitPoint)
             }
-
-            console.log(this.hitPoints);
         });
     }
 
     public enemySpawn(): void {
         this.enemiesGroup = this.physics.add.group()
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 6; i++) {
             let enemy = new EnemyKamikaze(this, 1200, Phaser.Math.Between(0, 900), this.hitPoints[Phaser.Math.Between(0, this.hitPoints.length - 1)].x, this.hitPoints[Phaser.Math.Between(0, this.hitPoints.length - 1)].y)
             this.enemiesGroup.add(enemy)
             enemy.enemyAttack()
@@ -127,10 +130,15 @@ export class MainShooter extends Phaser.Scene {
     public enemyHitBuilding(enemy: EnemyKamikaze, building): void {
         enemy.reset()
         this.building.hurt()
+        if (this.building.getHealth() == 0) {
+            this.scene.stop();
+            this.scene.start("GameOver");
+        }
     }
 
     public setUI(): void {
         this.timerText = this.add.text(800, 40, `${this.timer}`).setFontSize(50).setOrigin(0.5).setScrollFactor(0);
+        this.add.sprite(1400, 40, "controlls", 2).setOrigin(0.5, 0).setScrollFactor(0)
     }
 
     public updateUi(): void {
